@@ -236,49 +236,49 @@ void consertar_delecao(arvore *T, nodo *x){
     nodo *w;
 
     while(x != T->raiz && x->cor == 1){
-        if(x == x->pai->esquerda){
-            w = x->pai->direita;
-            if(w->cor == 0){
-                w->cor = 1;
-                x->pai->cor = 0;
+        if(x == x->pai->esquerda){ //se x for filho a esquerda
+            w = x->pai->direita;//w passa a ser o irmão de x
+            if(w->cor == 0){ //se a cor do irmão de x for vermelha //caso 1
+                w->cor = 1; //troca a cor pra preto
+                x->pai->cor = 0; //muda a cor do pai para vermelho
+                rotacaoEsquerda(T, x->pai);//vai rotacionar o pai a esquerda
+                w = x->pai->direita; //define o novo irmão do x
+            }
+            if(w->esquerda->cor == 1 && w->direita->cor == 1){//se w e os filhos de w forem pretos //caso 2
+                w->cor = 0; //w assume cor vermelha
+                x = x->pai; //x sobe um nodo
+            }
+            else if(w->direita->cor == 1){ //se o filho-direita de w for preto e w tambem //caso 3
+                w->esquerda->cor = 1; //o filho a esquerda tambem passa a ser preto
+                w->cor = 0; //a cor de w passa a ser vermelho
+                rotacaoDireita(T, w); //rotaciona o w a direita
+                w = x->pai->direita; //w volta a ser o irmão de x
+            }
+            else{ //w é preto e o filho a direita é vermelho //caso 4
+                w->cor = w->pai->cor; //w assume a cor de seu pai
+                x->pai->cor = 1; //pai de x passa a ser preto
+                w->direita->cor = 1; //direita de w vermelho
                 rotacaoEsquerda(T, x->pai);
-                w = x->pai->direita;
-            }
-            if(w->esquerda->cor == 1 && w->direita->cor == 1){
-                w->cor = 0;
-                x = x->pai;
-            }
-            else if(w->direita->cor == 1){
-                w->esquerda->cor = 1;
-                w->cor = 0;
-                rotacaoDireita(T, w);
-                w = x->pai->direita;
-            }
-            else{
-                w->cor = w->pai->cor;
-                x->pai->cor = 1;
-                w->direita->cor = 1;
-                rotacaoEsquerda(T, x->pai);
-                x = T->raiz;
+                x = T->raiz; //atribui a raiz para x para encerrar o loop
             }
         }
         else{
-            w = x->pai->esquerda;
-            if(w->cor == 0){
-                w->cor = 1;
-                x->pai->cor = 0;
-                rotacaoDireita(T, x->pai);
-                w = x->pai->esquerda;
+            w = x->pai->esquerda; //w = irmão de x
+            if(w->cor == 0){ //se w for vermelho
+                w->cor = 1; //w passa a ser preto
+                x->pai->cor = 0; //pai de w e x passa a ser vermelho
+                rotacaoDireita(T, x->pai); //rotaciona a direita
+                w = x->pai->esquerda; //w recebe o novo irmao de x
             }
-            if(w->direita->cor == 1 && w->esquerda->cor == 1){
-                w->cor = 0;
-                x = x->pai;
+            if(w->direita->cor == 1 && w->esquerda->cor == 1){ //filhos de w são pretos
+                w->cor = 0; //w passa a ser vermelho
+                x = x->pai; //x sobe um nodo
             }
-            else if(w->esquerda->cor == 1){
-                w->direita->cor = 1;
-                w->cor = 0;
-                rotacaoEsquerda(T, w);
-                w = x->pai->esquerda;
+            else if(w->esquerda->cor == 1){ //filho a esquerda de w é preto
+                w->direita->cor = 1; //filho a direita passa ser preto tmb
+                w->cor = 0; //w passa a ser vermelho
+                rotacaoEsquerda(T, w);//rotaciona w para esquerda
+                w = x->pai->esquerda; //
             }
             else{
                 w->cor = w->pai->cor;
@@ -289,7 +289,7 @@ void consertar_delecao(arvore *T, nodo *x){
             }
         }
     }
-    x->cor = 1;
+    x->cor = 1; // a raiz sempre precisa ser preta
 }
 
 nodo *deletar(arvore *T, int k){
@@ -297,44 +297,44 @@ nodo *deletar(arvore *T, int k){
     nodo *y, *x;
 
     if(z == T->nil){
-        return z;
+        return z; //Retorna T->nil se não encontrar a chave
     }
 
     if(z->esquerda == T->nil || z->direita == T->nil){
         y = z;
     }
-    else{
+    else{ //se tiver filhos a esquerda e direita a variavel auxiliar y recebe o sucessor de z
         y = arv_sucessor(T, z);
     }
 
-    if(y->esquerda != T->nil){
-        x = y->esquerda;
+    if(y->esquerda != T->nil){ //se tiver filho a esquerda
+        x = y->esquerda; //x passa a ser filho-esquerdo de y
     }
     else{
-        x = y->direita;
+        x = y->direita; //x passa a ser filho-direita de y
     }
 
     x->pai = y->pai;
 
-    if(y->pai == T->nil){
-        T->raiz = x;
+    if(y->pai == T->nil){ //se y era raiz
+        T->raiz = x;  //a raiz da arvore passa a ser x
     }
-    else if(y == y->pai->esquerda){
-        y->pai->esquerda = x;
+    else if(y == y->pai->esquerda){ //se o y for filho a esquerda
+        y->pai->esquerda = x; //esquerda do pai-y recebe x
     }
     else{
-        y->pai->direita = x;
+        y->pai->direita = x; //direita do pai-y recebe x
     }
 
-    if(y != z){
-        z->chave = y->chave;
+    if(y != z){ //se y for diferente do nodo a ser excluido
+        z->chave = y->chave; //z recebe os dados de y
     }
 
-    if(y->cor == 1){
+    if(y->cor == 1){ // se y for preto precisa consertar a arvore
         consertar_delecao(T, x);
     }
 
-    return z;
+    return y;
 }
 
 int main(){
