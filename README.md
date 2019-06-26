@@ -1,5 +1,5 @@
 # Estrutura de Dados 2
 
-Trabalhos realizados na disciplina de Estrutura de Dados 2
+Arvore binária de busca
 
-Autor: Daniel Welter da Silva
+Árvore rubro-negra
